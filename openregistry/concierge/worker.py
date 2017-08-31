@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 import argparse
 import logging
+import logging.config
 import os
 import yaml
-
 
 from openprocurement_client.resources.lots import LotsClient
 from openprocurement_client.resources.assets import AssetsClient
@@ -17,16 +17,9 @@ from openprocurement_client.exceptions import (
 from .utils import prepare_couchdb, continuous_changes_feed
 
 logger = logging.getLogger(__name__)
-logger.setLevel(logging.INFO)
-ch = logging.StreamHandler()
-ch.setLevel(logging.INFO)
-ch.setFormatter(
-    logging.Formatter('[%(asctime)s %(levelname)-5.5s] %(message)s')
-)
-logger.addHandler(ch)
 
 
-class BotWorker(object):
+class Concierge(object):
     def __init__(self, config):
         self.config = config
         self.sleep = self.config['time_to_sleep']
@@ -149,7 +142,8 @@ def main():
     if os.path.isfile(params.config):
         with open(params.config) as config_object:
             config = yaml.load(config_object.read())
-        BotWorker(config).run()
+        logging.config.dictConfig(config)
+        Concierge(config).run()
 
 
 if __name__ == "__main__":

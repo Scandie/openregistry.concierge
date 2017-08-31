@@ -4,7 +4,7 @@ import pytest
 
 from StringIO import StringIO
 
-from openregistry.concierge.worker import BotWorker, logger as LOGGER
+from openregistry.concierge.worker import Concierge, logger as LOGGER
 
 TEST_CONFIG = {
     "db": {
@@ -37,7 +37,7 @@ TEST_CONFIG = {
 def bot(mocker):
     mocker.patch('openregistry.concierge.worker.LotsClient', autospec=True)
     mocker.patch('openregistry.concierge.worker.AssetsClient', autospec=True)
-    return BotWorker(TEST_CONFIG)
+    return Concierge(TEST_CONFIG)
 
 
 class LogInterceptor(object):
