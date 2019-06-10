@@ -430,9 +430,9 @@ class ProcessingLoki(object):
                     to_patch
                 )
                 if result is False:
-                    self._process_lot_and_assets(lot, 'composing', 'pending')
                     self._patch_lot_asset_related_processes(lot, cleanup=True)
                     self.clean_asset_related_processes(asset_added_rPs)
+                    self._process_lot_and_assets(lot, 'composing', 'pending')
                     log_broken_lot(self.db, logger, self.errors_doc, lot, 'patching Lot to pending')
                     return False
                 return True
