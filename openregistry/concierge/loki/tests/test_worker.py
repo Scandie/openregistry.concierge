@@ -22,6 +22,7 @@ from openprocurement_client.exceptions import (
 from openregistry.concierge.loki.constants import KEYS_FOR_LOKI_PATCH, KEYS_FOR_AUCTION_CREATE
 
 ROOT = os.path.dirname(__file__) + '/data/'
+TRANSFER_TOKEN = 'transfer_token'
 
 
 def test_processing_loki_init(db, logger, mocker):
@@ -1254,7 +1255,7 @@ def test_create_auction(bot, logger, mocker):
 
     data_with_auction_period = deepcopy(dict_with_value)
     data_with_auction_period['auctionPeriod'] = {'startDate': auction_date.isoformat()}
-    data_with_auction_period['transfer_token'] = 'transfer_token'
+    data_with_auction_period['transfer_token'] = TRANSFER_TOKEN
     data_with_auction_period['documents'] = []
     data_with_auction_period['status'] = 'pending.activation'
 
@@ -1292,7 +1293,7 @@ def test_create_auction(bot, logger, mocker):
         'startDate': calculate_business_date(now_date, timedelta(1), None, True).isoformat()
     }
     data_with_auction_period['documents'] = []
-    data_with_auction_period['transfer_token'] = 'transfer_token'
+    data_with_auction_period['transfer_token'] = TRANSFER_TOKEN
     data_with_auction_period['status'] = 'pending.activation'
 
     result = bot._create_auction(old_period_lot)
@@ -1316,7 +1317,7 @@ def test_create_auction(bot, logger, mocker):
     mock_post_auction.side_effect = iter([auction_obj])
     data_with_tender_period = deepcopy(dict_with_value)
     data_with_tender_period['documents'] = []
-    data_with_tender_period['transfer_token'] = 'transfer_token'
+    data_with_tender_period['transfer_token'] = TRANSFER_TOKEN
     data_with_tender_period['status'] = 'pending.activation'
 
     auction = active_salable_lot['auctions'][1]
@@ -1463,7 +1464,7 @@ def test_create_auction(bot, logger, mocker):
 
     data_with_documents = deepcopy(dict_with_documents)
     data_with_documents['auctionPeriod'] = {'startDate': auction_date.isoformat()}
-    data_with_documents['transfer_token'] = 'transfer_token'
+    data_with_documents['transfer_token'] = TRANSFER_TOKEN
     lot_docs = deepcopy(lot_with_docs.get('documents', []))
     for d in lot_docs:
         if d['documentOf'] == 'lot':
@@ -1806,8 +1807,8 @@ def test_add_related_process_to_assets(bot, logger, mocker):
 
     # All adding is succesful
     bot._create_asset_related_process.side_effect = [
-        {'id': '1'},
-        {'id': '2'}
+        {'data': {'id': '1'}},
+        {'data': {'id': '2'}}
     ]
     expected_patched_rPs = [
         {'id': '1', 'asset_parent': lot_assets[1]['relatedProcessID']},
@@ -1824,7 +1825,7 @@ def test_add_related_process_to_assets(bot, logger, mocker):
 
     # One of adding failed
     bot._create_asset_related_process.side_effect = [
-        {'id': '1'},
+        {'data': {'id': '1'}},
         RequestFailed(response=munchify({"text": "Request failed.", "status_code": 502}))
     ]
     expected_patched_rPs = [
